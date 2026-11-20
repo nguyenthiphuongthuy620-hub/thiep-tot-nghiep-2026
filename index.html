@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp Mời Tốt Nghiệp - Nguyễn Thị Phương Thuỳ</title>
+    <!-- Phông chữ tiếng Việt chuẩn để hiển thị dấu chính xác 100% -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-950: #06101f;
+            --navy-900: #0F2342;
+            --navy-800: #173461;
+            --gold-400: #E5C158;
+            --gold-500: #D4AF37;
+            --gold-700: #937218;
+            --cream-50: #FAF7F0;
+            --cream-100: #F2ECE0;
+            --cream-200: #E4D9C3;
+            --ink-900: #0F2342;
+            --ink-700: #334155;
+            --ink-500: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--navy-950);
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.16) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(23, 52, 97, 0.78) 0%, transparent 55%),
+                linear-gradient(160deg, #071326 0%, #0F2342 55%, #081529 100%);
+            color: var(--ink-900);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .font-display {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .font-editorial {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #9b7817 0%, #f0d27a 42%, #D4AF37 70%, #f8e4a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Canvas pháo hoa giấy */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* =========================================================
+           BƯỚC 1: PHONG BÌ ĐANG ĐÓNG (SEALED ENVELOPE VIEW)
+           Mở trang lên luôn hiển thị trước tiên, ấn vào mới mở
+        ========================================================= */
+        #envelope-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 16px 36px;
+            min-height: 100vh;
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        #envelope-stage.is-hidden {
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .envelope-top-banner {
+            text-align: center;
+            margin-bottom: 24px;
+            animation: gentleFloat 3.2s ease-in-out infinite;
+        }
+
+        .envelope-kicker {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold-400);
+            background: rgba(15, 35, 66, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 6px 16px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+        }
+
+        .envelope-prompt {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: var(--cream-50);
+        }
+
+        .envelope-scene {
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 4 / 2.9;
+            perspective: 1500px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .envelope-shell {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(145deg, #173461 0%, #0F2342 100%);
+            border-radius: 16px;
+            box-shadow:
+                0 28px 65px rgba(0, 0, 0, 0.78),
+                inset 0 0 0 2px rgba(212, 175, 55, 0.65);
+            transition: transform 0.3s ease;
+        }
+
+        .envelope-scene:hover .envelope-shell {
+            transform: translateY(-4px);
+        }
+
+        .envelope-frame-line {
+            position: absolute;
+            inset: 11px;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            border-radius: 11px;
+            pointer-events: none;
+            z-index: 26;
+        }
+
+        .envelope-recipient-header {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            right: 18px;
+            text-align: center;
+            z-index: 27;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .envelope-shell.opening .envelope-recipient-header {
+            opacity: 0;
+        }
+
+        .envelope-recipient-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            color: var(--gold-400);
+            text-transform: uppercase;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.75);
+        }
+
+        .envelope-recipient-pill {
+            margin-top: 5px;
+            display: inline-block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 3px 14px;
+            border-radius: 999px;
+            background: rgba(6, 16, 31, 0.65);
+            border: 1px solid rgba(212, 175, 55, 0.42);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Thiệp giấy bên trong trượt lên khi mở nắp */
+        .envelope-card-insert {
+            position: absolute;
+            left: 7%;
+            right: 7%;
+            bottom: 8%;
+            height: 82%;
+            background: var(--cream-50);
+            border: 1.5px solid var(--gold-500);
+            border-radius: 10px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            text-align: center;
+            transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .envelope-shell.opening .envelope-card-insert {
+            transform: translateY(-48%);
+            z-index: 25;
+        }
+
+        /* Các cánh gấp phong bì */
+        .flap-left {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1b3d70 0%, #0F2342 100%);
+            clip-path: polygon(0 0, 52% 54%, 0 100%);
+            border-radius: 16px;
+            z-index: 15;
+        }
+
+        .flap-right {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(225deg, #1b3d70 0%, #0F2342 100%);
+            clip-path: polygon(100% 0, 48% 54%, 100% 100%);
+            border-radius: 16px;
+            z-index: 15;
+        }
+
+        .flap-bottom {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, #081529 0%, #163361 100%);
+            clip-path: polygon(0 100%, 50% 48%, 100% 100%);
+            border-radius: 16px;
+            z-index: 18;
+            filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.45));
+        }
+
+        /* Nắp phong bì trên cùng — mặc định ĐÓNG kín, ấn vào sẽ lật mở */
+        .flap-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 62%;
+            background: linear-gradient(180deg, #1f457e 0%, #0F2342 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 96%);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            transform-origin: top center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.35s;
+            z-index: 22;
+            filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
+        }
+
+        .envelope-shell.opening .flap-top {
+            transform: rotateX(180deg);
+            z-index: 5;
+        }
+
+        /* Con dấu sáp vàng */
+        .wax-seal-btn {
+            position: absolute;
+            top: 54%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fae6a2 0%, #D4AF37 60%, #866510 100%);
+            border: 2px solid #f7e4a3;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.65), inset 0 2px 5px rgba(255, 255, 255, 0.65);
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .envelope-scene:hover .wax-seal-btn {
+            transform: translate(-50%, -50%) scale(1.07);
+        }
+
+        .envelope-shell.opening .wax-seal-btn {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.35);
+            pointer-events: none;
+        }
+
+        .envelope-footer-badge {
+            position: absolute;
+            bottom: 13px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 27;
+            pointer-events: none;
+        }
+
+        .envelope-footer-badge span {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 999px;
+            background: rgba(6, 16, 31, 0.88);
+            border: 1px solid rgba(212, 175, 55, 0.65);
+            color: var(--gold-400);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+        }
+
+        .open-envelope-cta {
+            margin-top: 26px;
+            padding: 13px 30px;
+            border-radius: 999px;
+            border: 1.5px solid var(--gold-400);
+            background: linear-gradient(135deg, #173461 0%, #0F2342 100%);
+            color: var(--gold-400);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+            transition: all 0.25s ease;
+        }
+
+        .open-envelope-cta:hover {
+            background: var(--gold-500);
+            color: var(--navy-950);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           BƯỚC 2: NỘI DUNG THIỆP MỜI & FORM XÁC NHẬN THAM DỰ
+           Chỉ hiển thị sau khi ấn mở phong bì
+        ========================================================= */
+        #invitation-stage {
+            display: none;
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px 14px 48px;
+            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        #invitation-stage.is-visible {
+            display: block;
+        }
+
+        .top-action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .navy-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 15px;
+            border-radius: 999px;
+            background: rgba(15, 35, 66, 0.92);
+            border: 1px solid rgba(212, 175, 55, 0.48);
+            color: var(--gold-400);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .navy-pill-btn:hover {
+            background: var(--navy-800);
+            border-color: var(--gold-400);
+        }
+
+        .invitation-sheet {
+            position: relative;
+            background-color: var(--cream-50);
+            background-image:
+                radial-gradient(rgba(212, 175, 55, 0.14) 1px, transparent 0),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(242, 236, 224, 0.95) 100%);
+            background-size: 22px 22px, 100% 100%;
+            border-radius: 20px;
+            box-shadow: 0 26px 65px rgba(0, 0, 0, 0.68), 0 0 0 1px rgba(212, 175, 55, 0.5);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .sheet-gold-frame {
+            margin: 14px;
+            padding: 32px 20px 30px;
+            border: 1.5px solid rgba(212, 175, 55, 0.68);
+            border-radius: 14px;
+            position: relative;
+            text-align: center;
+        }
+
+        .school-name {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            color: var(--gold-700);
+            text-transform: uppercase;
+            max-width: 440px;
+            margin: 8px auto 0;
+            line-height: 1.5;
+        }
+
+        .card-main-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: clamp(25px, 5.2vw, 37px);
+            margin-top: 8px;
+            line-height: 1.22;
+        }
+
+        .card-sub-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: clamp(13px, 2.7vw, 17px);
+            letter-spacing: 0.14em;
+            color: var(--navy-900);
+            margin-top: 5px;
+        }
+
+        .gold-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 16px auto;
+            color: var(--gold-500);
+        }
+
+        .gold-divider .rule {
+            width: 64px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+        }
+
+        .guest-greeting-line {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 21px;
+            color: var(--ink-700);
+            line-height: 1.55;
+        }
+
+        .guest-name-chip {
+            display: inline-block;
+            font-weight: 700;
+            color: var(--navy-900);
+            background: rgba(212, 175, 55, 0.18);
+            border-bottom: 1.5px solid var(--gold-500);
+            padding: 1px 11px;
+            border-radius: 6px;
+        }
+
+        .graduate-name-display {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: clamp(28px, 6.2vw, 42px);
+            color: var(--navy-900);
+            line-height: 1.28;
+            margin: 10px 0 6px;
+        }
+
+        .cohort-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 19px;
+            color: var(--gold-700);
+        }
+
+        .cohort-row .bar {
+            width: 44px;
+            height: 1px;
+            background: var(--gold-500);
+        }
+
+        .info-stack {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .info-item .info-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--navy-900);
+        }
+
+        .info-item .info-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 21px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+
+        .degree-box {
+            margin-top: 22px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(212, 175, 55, 0.48);
+        }
+
+        .degree-name {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: clamp(15px, 3.2vw, 20px);
+            color: var(--navy-900);
+            letter-spacing: 0.06em;
+        }
+
+        .closing-note {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
+            color: var(--ink-700);
+            margin-top: 6px;
+        }
+
+        .action-row {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-navy {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: var(--navy-900);
+            color: var(--gold-400);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-navy:hover {
+            background: var(--navy-800);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-navy {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--navy-900);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1.5px solid var(--navy-900);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-navy:hover {
+            background: var(--navy-900);
+            color: #ffffff;
+        }
+
+        /* Form RSVP & Lời chúc */
+        .rsvp-card {
+            background: var(--cream-50);
+            border-radius: 20px;
+            padding: 26px 20px;
+            border: 1.5px solid rgba(212, 175, 55, 0.55);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.52);
+            margin-bottom: 24px;
+        }
+
+        .rsvp-head {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .rsvp-head h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--navy-900);
+        }
+
+        .rsvp-head p {
+            font-size: 13px;
+            color: var(--ink-500);
+            margin-top: 4px;
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--navy-900);
+            margin-bottom: 7px;
+        }
+
+        .field-label .soft-note {
+            text-transform: none;
+            font-weight: 500;
+            color: var(--ink-500);
+        }
+
+        .field-control {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(212, 175, 55, 0.55);
+            background: #ffffff;
+            font-family: inherit;
+            font-size: 14px;
+            color: #1e293b;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-control:focus {
+            border-color: var(--navy-900);
+            box-shadow: 0 0 0 3px rgba(15, 35, 66, 0.12);
+        }
+
+        .attendance-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .attendance-btn {
+            padding: 13px 12px;
+            border-radius: 12px;
+            border: 1.5px solid #cbd5e1;
+            background: #ffffff;
+            color: var(--ink-700);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .attendance-btn.selected-yes {
+            border-color: #059669;
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .attendance-btn.selected-no {
+            border-color: #e11d48;
+            background: #fff1f2;
+            color: #9f1239;
+        }
+
+        .privacy-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 35, 66, 0.06);
+            border: 1px solid rgba(15, 35, 66, 0.14);
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12px;
+            color: var(--navy-900);
+            margin-bottom: 8px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #173461 0%, #0F2342 100%);
+            color: var(--gold-400);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(15, 35, 66, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--navy-800);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .rsvp-feedback {
+            display: none;
+            margin-top: 16px;
+            padding: 15px 16px;
+            border-radius: 12px;
+            background: #ecfdf5;
+            border: 1.5px solid #6ee7b7;
+            color: #065f46;
+            font-size: 13.5px;
+            line-height: 1.55;
+        }
+
+        .rsvp-feedback.declined {
+            background: #fffbeb;
+            border-color: #fcd34d;
+            color: #92400e;
+        }
+
+        /* Chân trang & nút mở Góc Quản Lý Của Phương Thuỳ */
+        .site-footer {
+            text-align: center;
+            padding: 16px 12px 30px;
+            border-top: 1px solid rgba(212, 175, 55, 0.18);
+            color: rgba(242, 236, 224, 0.7);
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Khi mở file thiệp dành cho khách (?guest=1 hoặc __IS_GUEST_INVITE__ = true), ẩn hoàn toàn Góc Quản Lý */
+        body.guest-only-mode .owner-only-ui {
+            display: none !important;
+        }
+
+        /* Modal Góc Quản Lý Của Phương Thuỳ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 10, 20, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 650px;
+            background: var(--cream-50);
+            border-radius: 18px;
+            border: 2px solid var(--gold-500);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-top {
+            background: var(--navy-900);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.45);
+        }
+
+        .modal-top h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-400);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .pin-input-wrap {
+            position: relative;
+            max-width: 280px;
+            margin: 0 auto 12px;
+        }
+
+        .pin-input-field {
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 0.22em;
+            font-weight: 700;
+            padding: 12px 44px 12px 14px;
+            border-radius: 12px;
+            border: 2px solid var(--gold-500);
+            background: #ffffff;
+            color: var(--navy-900);
+            outline: none;
+        }
+
+        .pin-toggle-eye {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 17px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 8px 13px;
+            border-radius: 9px;
+            border: none;
+            background: #e2e8f0;
+            color: var(--ink-700);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--navy-900);
+            color: var(--gold-400);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .metric-box {
+            background: #ffffff;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            border-radius: 12px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .metric-num {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--navy-900);
+        }
+
+        .metric-lbl {
+            font-size: 11px;
+            color: var(--ink-500);
+            margin-top: 2px;
+        }
+
+        .response-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid var(--gold-500);
+            border-radius: 11px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .badge-attend {
+            background: #dcfce7;
+            color: #166534;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+        }
+
+        .badge-absent {
+            background: #ffe4e6;
+            color: #9f1239;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 999px;
+        }
+
+        .wish-bubble {
+            margin-top: 8px;
+            padding: 9px 12px;
+            background: var(--cream-50);
+            border-radius: 8px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 17px;
+            font-style: italic;
+            color: #1e293b;
+        }
+
+        .btn-del-one {
+            padding: 4px 10px;
+            border-radius: 7px;
+            border: 1px solid #fecdd3;
+            background: #fff1f2;
+            color: #be123c;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-del-one.confirming {
+            background: #be123c;
+            color: #ffffff;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--navy-900);
+            color: var(--gold-400);
+            border: 1px solid var(--gold-500);
+            padding: 11px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+            z-index: 10000;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            max-width: 92vw;
+            text-align: center;
+        }
+
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .attendance-options {
+                grid-template-columns: 1fr;
+            }
+            .sheet-gold-frame {
+                margin: 10px;
+                padding: 26px 14px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti-canvas"></canvas>
+    <div id="toast-msg" class="toast-msg"></div>
+
+    <!-- =========================================================
+         TRẠNG THÁI 1: PHONG BÌ ĐANG ĐÓNG (LUÔN HIỆN ĐẦU TIÊN)
+    ========================================================== -->
+    <section id="envelope-stage">
+        <div class="envelope-top-banner">
+            <span class="envelope-kicker">Lễ Tốt Nghiệp • Class of 2026</span>
+            <p class="envelope-prompt">Chạm vào phong bì để mở thiệp mời tốt nghiệp</p>
+        </div>
+
+        <div class="envelope-scene" role="button" tabindex="0" aria-label="Mở thiệp mời tốt nghiệp"
+             onclick="openSealedEnvelope()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openSealedEnvelope();}">
+            <div id="envelope-shell" class="envelope-shell">
+                <div class="envelope-frame-line"></div>
+
+                <div class="envelope-recipient-header">
+                    <div class="envelope-recipient-title">Thiệp Mời Tốt Nghiệp</div>
+                    <div class="envelope-recipient-pill">Trân trọng kính mời: <span id="env-guest-name">Quý vị / Bạn</span></div>
+                </div>
+
+                <!-- Tấm thiệp bên trong lộ ra khi lật nắp -->
+                <div class="envelope-card-insert">
+                    <div style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #937218; text-transform: uppercase;">
+                        Trường Đại Học Công Nghiệp TP.HCM
+                    </div>
+                    <div id="env-graduate-name" class="font-display" style="font-size: 20px; font-weight: 800; color: #0F2342; margin-top: 4px;">
+                        Nguyễn Thị Phương Thuỳ
+                    </div>
+                    <div style="width: 48px; height: 1px; background: #D4AF37; margin: 6px 0;"></div>
+                    <div id="env-event-date" class="font-editorial" style="font-style: italic; font-size: 15px; color: #334155;">
+                        Thứ Sáu, ngày 27/11/2026 • 12 Nguyễn Văn Bảo
+                    </div>
+                </div>
+
+                <!-- Các mặt gấp phong bì -->
+                <div class="flap-left"></div>
+                <div class="flap-right"></div>
+                <div class="flap-bottom"></div>
+                <div class="flap-top"></div>
+
+                <!-- Con dấu sáp vàng -->
+                <div class="wax-seal-btn" title="Nhấn để mở thiệp">
+                    <svg width="38" height="38" viewBox="0 0 64 64" fill="#06101f">
+                        <path d="M32 10L4 23l28 13 22.8-10.6V39h4.2V23L32 10zm0 30.8L14 32.4v9.8c0 5.4 8.1 9.8 18 9.8s18-4.4 18-9.8v-9.8l-18 8.4z"/>
+                    </svg>
+                </div>
+
+                <div class="envelope-footer-badge">
+                    <span id="env-badge-text">Phương Thuỳ • 27/11/2026</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="open-envelope-cta" onclick="openSealedEnvelope()">
+            Mở Thiệp Mời ✨
+        </button>
+    </section>
+
+    <!-- =========================================================
+         TRẠNG THÁI 2: THIỆP MỜI CHI TIẾT & FORM XÁC NHẬN
+    ========================================================== -->
+    <main id="invitation-stage">
+        <div class="top-action-bar">
+            <button type="button" class="navy-pill-btn" onclick="sealEnvelopeAgain()">
+                <span>✉️ Đóng phong bì</span>
+            </button>
+            <button type="button" class="navy-pill-btn owner-only-ui" onclick="openOwnerManagementModal()">
+                <span>🔒 Góc Quản Lý Của Phương Thuỳ</span>
+            </button>
+        </div>
+
+        <!-- Tấm thiệp mời -->
+        <article class="invitation-sheet">
+            <div class="sheet-gold-frame">
+                <svg width="76" height="58" viewBox="0 0 120 95" style="margin: 0 auto;">
+                    <path d="M36 78 C16 64, 14 34, 32 16" fill="none" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M84 78 C104 64, 106 34, 88 16" fill="none" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round"/>
+                    <polygon points="60,12 28,26 60,40 92,26" fill="#0F2342" stroke="#D4AF37" stroke-width="1.5"/>
+                    <path d="M40,32 L40,44 C40,50 80,50 80,44 L80,32" fill="#173461" stroke="#D4AF37" stroke-width="1.2"/>
+                    <line x1="88" y1="27" x2="88" y2="46" stroke="#D4AF37" stroke-width="2"/>
+                    <circle cx="88" cy="48" r="2.8" fill="#D4AF37"/>
+                    <path d="M34,62 Q47,56 60,62 Q73,56 86,62 L86,76 Q73,70 60,76 Q47,70 34,76 Z" fill="#ffffff" stroke="#0F2342" stroke-width="1.8"/>
+                </svg>
+
+                <div id="card-school" class="school-name">
+                    TRƯỜNG ĐẠI HỌC CÔNG NGHIỆP THÀNH PHỐ HỒ CHÍ MINH (IUH)
+                </div>
+
+                <h1 class="card-main-title gold-text">THIỆP MỜI TỐT NGHIỆP</h1>
+                <div class="card-sub-title">LỄ TỐT NGHIỆP CỬ NHÂN</div>
+
+                <div class="gold-divider">
+                    <span class="rule"></span>
+                    <span>✦</span>
+                    <span class="rule"></span>
+                </div>
+
+                <p class="guest-greeting-line">
+                    Trân trọng kính mời
+                    <span id="card-guest-name" class="guest-name-chip">Quý vị / Bạn</span><br>
+                    đến chung vui cùng tân cử nhân
+                </p>
+
+                <div id="card-graduate" class="graduate-name-display">
+                    Nguyễn Thị Phương Thuỳ
+                </div>
+
+                <div class="cohort-row">
+                    <span class="bar"></span>
+                    <span>★</span>
+                    <span id="card-cohort">Niên khóa 2022 – 2026</span>
+                    <span>★</span>
+                    <span class="bar"></span>
+                </div>
+
+                <div class="info-stack">
+                    <div class="info-item">
+                        <div class="info-label">Ngày tổ chức</div>
+                        <div id="card-date" class="info-value">Thứ Sáu, ngày 27 tháng 11 năm 2026</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Thời gian</div>
+                        <div id="card-time" class="info-value">08:00 – 11:00</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Địa điểm</div>
+                        <div id="card-venue" class="info-value">12 Nguyễn Văn Bảo, Phường 4, Quận Gò Vấp, TP. Hồ Chí Minh</div>
+                    </div>
+                </div>
+
+                <div class="degree-box">
+                    <div id="card-degree" class="degree-name">CỬ NHÂN ĐẠI HỌC CÔNG NGHIỆP TP.HCM (IUH)</div>
+                    <div id="card-note" class="closing-note">Sự hiện diện và lời chúc của bạn là niềm vui lớn đối với Phương Thuỳ!</div>
+                </div>
+
+                <div class="action-row">
+                    <button type="button" class="btn-navy" onclick="saveEventToCalendar()">
+                        <span>📅 Lưu vào Lịch</span>
+                    </button>
+                    <a id="card-maps-link" href="https://maps.google.com/?q=12+Nguy%E1%BB%85n+V%C4%83n+B%E1%BA%A3o,+G%C3%B2+V%E1%BA%A5p,+TP.+H%E1%BB%93+Ch%C3%AD+Minh"
+                       target="_blank" rel="noopener noreferrer" class="btn-outline-navy">
+                        <span>📍 Xem Google Maps</span>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Form xác nhận tham dự & lời chúc gửi Phương Thuỳ -->
+        <section class="rsvp-card">
+            <div class="rsvp-head">
+                <h2>Xác Nhận Tham Dự & Gửi Lời Chúc</h2>
+                <p>Hãy cho Phương Thuỳ biết bạn có tham dự được không nhé!</p>
+            </div>
+
+            <form id="rsvp-form" onsubmit="submitGuestRsvp(event)">
+                <div class="field-group">
+                    <label for="rsvp-name" class="field-label">
+                        1. Họ và tên của bạn <span style="color:#dc2626;">*</span>
+                    </label>
+                    <input type="text" id="rsvp-name" class="field-control" required placeholder="Nhập họ và tên của bạn...">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">2. Xác nhận tham dự <span style="color:#dc2626;">*</span></label>
+                    <div class="attendance-options">
+                        <button type="button" id="btn-yes" class="attendance-btn selected-yes" onclick="chooseAttendance('Có tham dự')">
+                            <span style="font-size:20px;">🎉</span>
+                            <span>Có tham dự</span>
+                        </button>
+                        <button type="button" id="btn-no" class="attendance-btn" onclick="chooseAttendance('Không tham dự')">
+                            <span style="font-size:20px;">💌</span>
+                            <span>Không tham dự</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="rsvp-wish" class="field-label">
+                        3. Lời chúc gửi tới Phương Thuỳ <span class="soft-note">(Không bắt buộc)</span>
+                    </label>
+                    <div class="privacy-strip">
+                        <span>🔒</span>
+                        <span>Lời chúc sẽ được đồng bộ tới <strong>Góc Quản Lý Của Phương Thuỳ</strong> (nguyenthiphuongthuy620@gmail.com).</span>
+                    </div>
+                    <textarea id="rsvp-wish" rows="3" class="field-control" placeholder="Viết lời chúc mừng tốt nghiệp gửi Phương Thuỳ (có thể để trống)..."></textarea>
+                </div>
+
+                <button type="submit" id="rsvp-submit-btn" class="submit-btn">
+                    Gửi Xác Nhận & Lời Chúc ✨
+                </button>
+            </form>
+
+            <div id="rsvp-feedback" class="rsvp-feedback">
+                <strong id="rsvp-feedback-title" style="display:block; font-size:15px; margin-bottom:4px;"></strong>
+                <span id="rsvp-feedback-text"></span>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div>Thiệp Mời Tốt Nghiệp • Nguyễn Thị Phương Thuỳ • 12 Nguyễn Văn Bảo, TP.HCM</div>
+            <button type="button" class="navy-pill-btn owner-only-ui" onclick="openOwnerManagementModal()">
+                <span>🔒 Góc Quản Lý Của Phương Thuỳ</span>
+            </button>
+        </footer>
+    </main>
+
+    <!-- =========================================================
+         MODAL GÓC QUẢN LÝ CỦA PHƯƠNG THUỲ (BẢO VỆ BẰNG MÃ PIN)
+    ========================================================== -->
+    <div id="owner-modal" class="modal-overlay owner-only-ui">
+        <div class="modal-card">
+            <div class="modal-top">
+                <h3>🎓 Góc Quản Lý Của Phương Thuỳ</h3>
+                <button type="button" class="modal-close" onclick="closeOwnerManagementModal()" aria-label="Đóng">&times;</button>
+            </div>
+
+            <div class="modal-content">
+                <!-- Màn hình nhập / tạo mã PIN chữ & số (4-12 ký tự) -->
+                <div id="owner-auth-box" style="text-align:center; padding:10px 6px;">
+                    <div style="font-size:34px; margin-bottom:8px;">🔐</div>
+                    <div style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                        Tài khoản: <strong style="color:#0F2342;">nguyenthiphuongthuy620@gmail.com</strong>
+                    </div>
+                    <h4 id="pin-heading" class="font-display" style="font-size:18px; color:#0F2342; margin-bottom:6px;">
+                        Nhập Mã PIN Chủ Sở Hữu
+                    </h4>
+                    <p id="pin-subtext" style="font-size:13px; color:#475569; max-width:400px; margin:0 auto 14px; line-height:1.5;">
+                        Nhập mã PIN (chữ và/hoặc số, từ 4 đến 12 ký tự) để mở Góc Quản Lý và đồng bộ lời chúc trên mọi thiết bị.
+                    </p>
+
+                    <form onsubmit="submitPinForm(event)">
+                        <div class="pin-input-wrap">
+                            <input type="password" id="pin-input" class="pin-input-field"
+                                   minlength="4" maxlength="12" required autocomplete="off"
+                                   placeholder="4 - 12 ký tự">
+                            <button type="button" id="pin-eye-btn" class="pin-toggle-eye" onclick="togglePinVisibility()" title="Hiện/Ẩn mã PIN">
+                                👁️
+                            </button>
+                        </div>
+                        <div style="max-width:280px; margin:0 auto;">
+                            <button type="submit" id="pin-action-btn" class="submit-btn">Mở Góc Quản Lý</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Khu vực quản lý sau khi mở khóa đúng PIN -->
+                <div id="owner-panel-box" style="display:none;">
+                    <div class="tab-bar">
+                        <button type="button" id="tab-responses" class="tab-btn active" onclick="switchOwnerTab('responses')">
+                            💌 Phản hồi & Lời chúc (<span id="count-all-badge">0</span>)
+                        </button>
+                        <button type="button" id="tab-invite" class="tab-btn" onclick="switchOwnerTab('invite')">
+                            🔗 Tạo Link / Tải Thiệp Riêng
+                        </button>
+                        <button type="button" id="tab-settings" class="tab-btn" onclick="switchOwnerTab('settings')">
+                            ✏️ Tùy chỉnh & Đổi PIN
+                        </button>
+                    </div>
+
+                    <!-- Tab 1: Danh sách phản hồi & đồng bộ đám mây -->
+                    <div id="panel-responses">
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div id="stat-attending" class="metric-num" style="color:#059669;">0</div>
+                                <div class="metric-lbl">Có tham dự</div>
+                            </div>
+                            <div class="metric-box">
+                                <div id="stat-declined" class="metric-num" style="color:#e11d48;">0</div>
+                                <div class="metric-lbl">Không tham dự</div>
+                            </div>
+                            <div class="metric-box">
+                                <div id="stat-wishes" class="metric-num" style="color:#937218;">0</div>
+                                <div class="metric-lbl">Có lời chúc</div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                            <span id="sync-status-label" style="font-size:12px; color:#475569; font-weight:600;">
+                                Tự động làm mới mỗi 4 giây
+                            </span>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="navy-pill-btn" style="padding:6px 12px; font-size:11.5px;" onclick="manualSyncNow()">
+                                    🔄 Tải lại dữ liệu
+                                </button>
+                                <button type="button" class="navy-pill-btn" style="padding:6px 12px; font-size:11.5px;" onclick="exportResponsesCsv()">
+                                    📥 Xuất CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="responses-container" style="max-height:340px; overflow-y:auto; padding-right:3px;"></div>
+                    </div>
+
+                    <!-- Tab 2: Tạo link mời (?to=...) & Tải file thiệp HTML riêng -->
+                    <div id="panel-invite" style="display:none;">
+                        <div style="background:#ffffff; border:1px solid rgba(212,175,55,0.5); border-radius:12px; padding:16px;">
+                            <h4 style="font-size:14px; color:#0F2342; margin-bottom:6px;">Tạo Link Mời Hoặc Tải File Thiệp Cho Từng Bạn</h4>
+                            <p style="font-size:12.5px; color:#475569; line-height:1.5; margin-bottom:12px;">
+                                Nhập tên bạn bè để tạo link mời cá nhân hóa hoặc tải file <strong>.html</strong> độc lập (đã bật sẵn chế độ khách mời, ẩn Góc Quản Lý và tự điền tên vào form).
+                            </p>
+
+                            <div class="field-group" style="margin-bottom:12px;">
+                                <label for="invite-friend-name" class="field-label">Tên người được mời</label>
+                                <input type="text" id="invite-friend-name" class="field-control" oninput="refreshInviteLinkOutput()" placeholder="Ví dụ: Minh Anh, Hoàng Nam...">
+                            </div>
+
+                            <div class="field-group" style="margin-bottom:12px;">
+                                <label for="invite-link-output" class="field-label">Link mời tạo tự động</label>
+                                <input type="text" id="invite-link-output" class="field-control" readonly style="background:#f8fafc; font-size:12px;">
+                                <p style="font-size:11.5px; color:#64748b; margin-top:6px; line-height:1.45;">
+                                    Khi chạy trên trang web/hosting thật (<code>http/https</code>), link sẽ có dạng <code>?to=...&amp;guest=1</code>. Khi chạy ở khung xem trước cục bộ, link sao chép sẽ là link mở trực tiếp <code>data:text/html;charset=utf-8,...</code> để dán vào trình duyệt mở ngay.
+                                </p>
+                            </div>
+
+                            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                                <button type="button" class="btn-navy" style="flex:1; justify-content:center;" onclick="copyInviteLink()">
+                                    📋 Sao chép Link mời
+                                </button>
+                                <button type="button" class="btn-outline-navy" style="flex:1; justify-content:center;" onclick="openInviteLink()">
+                                    🔗 Mở trang thiệp mời
+                                </button>
+                                <button type="button" class="btn-navy" style="flex:1 1 100%; justify-content:center; background:#937218; color:#fff8dc;" onclick="downloadGuestHtmlFile()">
+                                    💾 Tải file thiệp cho bạn (.HTML)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Tùy chỉnh nội dung thiệp & đổi mã PIN -->
+                    <div id="panel-settings" style="display:none;">
+                        <form onsubmit="saveCardSettings(event)">
+                            <div class="field-group" style="margin-bottom:10px;">
+                                <label class="field-label">Tên người được mời mặc định</label>
+                                <input type="text" id="cfg-default-guest" class="field-control" required>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                                <div>
+                                    <label class="field-label">Ngày tổ chức</label>
+                                    <input type="text" id="cfg-date" class="field-control" required>
+                                </div>
+                                <div>
+                                    <label class="field-label">Thời gian</label>
+                                    <input type="text" id="cfg-time" class="field-control" required>
+                                </div>
+                            </div>
+
+                            <div class="field-group" style="margin-bottom:10px;">
+                                <label class="field-label">Địa điểm</label>
+                                <input type="text" id="cfg-venue" class="field-control" required>
+                            </div>
+
+                            <div class="field-group" style="margin-bottom:10px;">
+                                <label class="field-label">Lời nhắn chân thiệp</label>
+                                <input type="text" id="cfg-note" class="field-control">
+                            </div>
+
+                            <div class="field-group" style="margin-bottom:14px;">
+                                <label class="field-label">Đổi mã PIN mới (chữ và/hoặc số, 4–12 ký tự)</label>
+                                <input type="password" id="cfg-new-pin" class="field-control" minlength="4" maxlength="12" placeholder="Để trống nếu giữ nguyên mã PIN hiện tại">
+                            </div>
+
+                            <button type="submit" class="submit-btn">Lưu Cài Đặt Thiệp</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // 1. CẤU HÌNH ĐỒNG BỘ ĐÁM MÂY CHO nguyenthiphuongthuy620@gmail.com
+        // =========================================================
+        const OWNER_EMAIL = "nguyenthiphuongthuy620@gmail.com";
+        const CHANNEL_SLUG = "pt-grad-2026-ntpt620";
+        const NTFY_ENDPOINT = `https://ntfy.sh/${CHANNEL_SLUG}`;
+        const KV_BASE_ENDPOINT = `https://keyvalue.immanuel.co/api/KeyVal/ptgrad2026/${CHANNEL_SLUG}`;
+
+        const STORAGE_RESPONSES_KEY = "pt_grad_v2_responses";
+        const STORAGE_CONFIG_KEY = "pt_grad_v2_config";
+        const STORAGE_PIN_KEY = "pt_grad_v2_pin_hash";
+        const STORAGE_DELETED_KEY = "pt_grad_v2_deleted_ids";
+
+        const DEFAULT_CARD_DATA = {
+            defaultGuest: "Quý vị / Bạn",
+            school: "TRƯỜNG ĐẠI HỌC CÔNG NGHIỆP THÀNH PHỐ HỒ CHÍ MINH (IUH)",
+            graduateName: "Nguyễn Thị Phương Thuỳ",
+            cohort: "Niên khóa 2022 – 2026",
+            date: "Thứ Sáu, ngày 27 tháng 11 năm 2026",
+            time: "08:00 – 11:00",
+            venue: "12 Nguyễn Văn Bảo, Phường 4, Quận Gò Vấp, TP. Hồ Chí Minh",
+            degree: "CỬ NHÂN ĐẠI HỌC CÔNG NGHIỆP TP.HCM (IUH)",
+            note: "Sự hiện diện và lời chúc của bạn là niềm vui lớn đối với Phương Thuỳ!"
+        };
+
+        let cardData = { ...DEFAULT_CARD_DATA };
+        let recipientFromLink = "";
+        let isGuestInviteFileOrParam = false;
+        let selectedAttendance = "Có tham dự";
+        let ownerUnlocked = false;
+        let storedPinHash = localStorage.getItem(STORAGE_PIN_KEY) || "";
+        let responsesCache = [];
+        let pendingDeleteId = null;
+        let autoSyncInterval = null;
+        const broadcastChannel = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel(CHANNEL_SLUG) : null;
+
+        function showToast(message) {
+            const el = document.getElementById("toast-msg");
+            el.textContent = message;
+            el.classList.add("show");
+            clearTimeout(window.__toastTimeout);
+            window.__toastTimeout = setTimeout(() => el.classList.remove("show"), 3200);
+        }
+
+        function escapeHtml(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        // =========================================================
+        // 2. MÃ HÓA / GIẢI MÃ UTF-8 AN TOÀN CHO LINK & FILE HTML
+        // =========================================================
+        function encodeUtf8Base64(obj) {
+            const bytes = new TextEncoder().encode(JSON.stringify(obj));
+            let bin = "";
+            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+            return btoa(bin);
+        }
+
+        function decodeUtf8Base64(b64) {
+            try {
+                if (!b64) return null;
+                const bin = atob(b64);
+                const bytes = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return JSON.parse(new TextDecoder().decode(bytes));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function parseUrlInviteState() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const guestParam = params.get("guest");
+                const isGuestParam = guestParam === "1" || guestParam === "true";
+                const isEmbeddedGuest = Boolean(window.__IS_GUEST_INVITE__ === true);
+                isGuestInviteFileOrParam = isGuestParam || isEmbeddedGuest;
+
+                if (isGuestInviteFileOrParam) {
+                    document.body.classList.add("guest-only-mode");
+                } else {
+                    document.body.classList.remove("guest-only-mode");
+                }
+
+                let name = params.get("to") || "";
+                let cfgB64 = params.get("cfg") || "";
+
+                if (window.location.hash) {
+                    const hashClean = window.location.hash.replace(/^#/, "");
+                    const hashParams = new URLSearchParams(hashClean);
+                    if (!name) name = hashParams.get("to") || "";
+                    if (!cfgB64) cfgB64 = hashParams.get("cfg") || "";
+                }
+
+                if (cfgB64) {
+                    const decodedCfg = decodeUtf8Base64(cfgB64);
+                    if (decodedCfg && typeof decodedCfg === "object") {
+                        cardData = { ...DEFAULT_CARD_DATA, ...cardData, ...decodedCfg };
+                    }
+                }
+
+                return (name || "").trim();
+            } catch (e) {
+                return "";
+            }
+        }
+
+        // =========================================================
+        // 3. HIỂN THỊ PHONG BÌ ĐÓNG & NỘI DUNG THIỆP
+        // =========================================================
+        function renderCardAndEnvelope() {
+            const activeGuest = recipientFromLink || cardData.defaultGuest || "Quý vị / Bạn";
+
+            document.getElementById("env-guest-name").textContent = activeGuest;
+            document.getElementById("env-graduate-name").textContent = cardData.graduateName;
+            document.getElementById("env-event-date").textContent = `${cardData.date} • ${cardData.venue}`;
+            document.getElementById("env-badge-text").textContent = "Phương Thuỳ • 27/11/2026";
+
+            document.getElementById("card-school").textContent = cardData.school;
+            document.getElementById("card-guest-name").textContent = activeGuest;
+            document.getElementById("card-graduate").textContent = cardData.graduateName;
+            document.getElementById("card-cohort").textContent = cardData.cohort;
+            document.getElementById("card-date").textContent = cardData.date;
+            document.getElementById("card-time").textContent = cardData.time;
+            document.getElementById("card-venue").textContent = cardData.venue;
+            document.getElementById("card-degree").textContent = cardData.degree;
+            document.getElementById("card-note").textContent = cardData.note;
+
+            const mapsLink = document.getElementById("card-maps-link");
+            mapsLink.href = "https://maps.google.com/?q=" + encodeURIComponent(cardData.venue);
+
+            const rsvpNameInput = document.getElementById("rsvp-name");
+            if (recipientFromLink && !rsvpNameInput.value.trim()) {
+                rsvpNameInput.value = recipientFromLink;
+            }
+        }
+
+        function burstConfetti() {
+            const canvas = document.getElementById("confetti-canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const palette = ["#D4AF37", "#f6e09c", "#0F2342", "#FAF7F0", "#ffffff"];
+            const bits = Array.from({ length: 70 }, () => ({
+                x: canvas.width * (0.28 + Math.random() * 0.44),
+                y: canvas.height * 0.5,
+                vx: (Math.random() - 0.5) * 12,
+                vy: -Math.random() * 11 - 4,
+                w: Math.random() * 7 + 4,
+                h: Math.random() * 5 + 3,
+                color: palette[Math.floor(Math.random() * palette.length)],
+                angle: Math.random() * 360,
+                vAngle: (Math.random() - 0.5) * 10
+            }));
+
+            let step = 0;
+            function frame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                bits.forEach(b => {
+                    b.x += b.vx;
+                    b.y += b.vy;
+                    b.vy += 0.32;
+                    b.angle += b.vAngle;
+                    ctx.save();
+                    ctx.translate(b.x, b.y);
+                    ctx.rotate((b.angle * Math.PI) / 180);
+                    ctx.fillStyle = b.color;
+                    ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h);
+                    ctx.restore();
+                });
+                step++;
+                if (step < 105) {
+                    requestAnimationFrame(frame);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            requestAnimationFrame(frame);
+        }
+
+        // Chỉ khi người dùng bấm vào phong bì hoặc nút "Mở Thiệp Mời" mới mở nắp và hiện thiệp
+        let isOpeningEnvelope = false;
+        function openSealedEnvelope() {
+            if (isOpeningEnvelope) return;
+            isOpeningEnvelope = true;
+            const shell = document.getElementById("envelope-shell");
+            shell.classList.add("opening");
+            burstConfetti();
+
+            setTimeout(() => {
+                document.getElementById("envelope-stage").classList.add("is-hidden");
+                document.getElementById("invitation-stage").classList.add("is-visible");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                isOpeningEnvelope = false;
+            }, 950);
+        }
+
+        function sealEnvelopeAgain() {
+            document.getElementById("invitation-stage").classList.remove("is-visible");
+            const envStage = document.getElementById("envelope-stage");
+            envStage.classList.remove("is-hidden");
+            document.getElementById("envelope-shell").classList.remove("opening");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function chooseAttendance(status) {
+            selectedAttendance = status;
+            const yesBtn = document.getElementById("btn-yes");
+            const noBtn = document.getElementById("btn-no");
+            if (status === "Có tham dự") {
+                yesBtn.classList.add("selected-yes");
+                noBtn.classList.remove("selected-no");
+            } else {
+                yesBtn.classList.remove("selected-yes");
+                noBtn.classList.add("selected-no");
+            }
+        }
+
+        function saveEventToCalendar() {
+            const ics = [
+                "BEGIN:VCALENDAR",
+                "VERSION:2.0",
+                "BEGIN:VEVENT",
+                "DTSTART:20261127T010000Z",
+                "DTEND:20261127T040000Z",
+                "SUMMARY:Lễ Tốt Nghiệp Cử Nhân - Nguyễn Thị Phương Thuỳ",
+                `LOCATION:${cardData.venue}`,
+                `DESCRIPTION:${cardData.school}`,
+                "END:VEVENT",
+                "END:VCALENDAR"
+            ].join("\r\n");
+            const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Le-Tot-Nghiep-Phuong-Thuy-27-11-2026.ics";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Đã tải file lịch sự kiện!");
+        }
+
+        // =========================================================
+        // 4. HỢP NHẤT & ĐỒNG BỘ ĐA THIẾT BỊ (ntfy.sh + keyvalue.immanuel.co)
+        // =========================================================
+        function getDeletedIdsSet() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(STORAGE_DELETED_KEY) || "[]");
+                return new Set(Array.isArray(raw) ? raw.map(String) : []);
+            } catch (e) {
+                return new Set();
+            }
+        }
+
+        function saveDeletedIdsSet(idSet) {
+            const arr = Array.from(idSet).map(String).slice(-500);
+            localStorage.setItem(STORAGE_DELETED_KEY, JSON.stringify(arr));
+            return arr;
+        }
+
+        function readLocalResponses() {
+            try {
+                const deletedSet = getDeletedIdsSet();
+                const raw = JSON.parse(localStorage.getItem(STORAGE_RESPONSES_KEY) || "[]");
+                if (!Array.isArray(raw)) return [];
+                const filtered = raw.filter(item => item && item.id && !deletedSet.has(String(item.id)));
+                if (filtered.length !== raw.length) {
+                    localStorage.setItem(STORAGE_RESPONSES_KEY, JSON.stringify(filtered));
+                }
+                return filtered;
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function writeLocalResponses(list) {
+            const deletedSet = getDeletedIdsSet();
+            const cleanList = (Array.isArray(list) ? list : []).filter(
+                item => item && item.id && !deletedSet.has(String(item.id))
+            );
+            localStorage.setItem(STORAGE_RESPONSES_KEY, JSON.stringify(cleanList));
+            return cleanList;
+        }
+
+        function mergeAndSortResponses(incomingList, incomingDeletedIds) {
+            const deletedSet = getDeletedIdsSet();
+            if (Array.isArray(incomingDeletedIds)) {
+                incomingDeletedIds.forEach(id => {
+                    if (id) deletedSet.add(String(id));
+                });
+            }
+            saveDeletedIdsSet(deletedSet);
+
+            const map = new Map();
+            const current = readLocalResponses();
+
+            [...responsesCache, ...current, ...(Array.isArray(incomingList) ? incomingList : [])].forEach(item => {
+                if (item && item.id && item.name) {
+                    const strId = String(item.id);
+                    if (deletedSet.has(strId)) return;
+                    map.set(strId, {
+                        id: strId,
+                        name: String(item.name),
+                        attendance: item.attendance === "Không tham dự" ? "Không tham dự" : "Có tham dự",
+                        wish: String(item.wish || ""),
+                        createdAt: item.createdAt || new Date().toISOString(),
+                        ownerEmail: OWNER_EMAIL
+                    });
+                }
+            });
+
+            const sorted = Array.from(map.values()).sort((a, b) =>
+                String(b.createdAt).localeCompare(String(a.createdAt))
+            );
+            responsesCache = sorted;
+            writeLocalResponses(sorted);
+            return sorted;
+        }
+
+        async function pushStateToCloudAndWait(list, deletedArr) {
+            const deletedSet = getDeletedIdsSet();
+            if (Array.isArray(deletedArr)) {
+                deletedArr.forEach(id => {
+                    if (id) deletedSet.add(String(id));
+                });
+            }
+            const finalDeletedIds = saveDeletedIdsSet(deletedSet);
+            const payloadList = writeLocalResponses(list).slice(0, 150);
+
+            const envelopePayload = {
+                type: "pt_grad_sync_state",
+                ownerEmail: OWNER_EMAIL,
+                items: payloadList,
+                deletedIds: finalDeletedIds,
+                updatedAt: new Date().toISOString()
+            };
+
+            const kvListUrl = `${KV_BASE_ENDPOINT}_list/${encodeURIComponent(JSON.stringify(payloadList))}`;
+            const kvDeletedUrl = `${KV_BASE_ENDPOINT}_deleted/${encodeURIComponent(JSON.stringify(finalDeletedIds))}`;
+
+            const tasks = [
+                fetch(NTFY_ENDPOINT, {
+                    method: "POST",
+                    body: JSON.stringify(envelopePayload)
+                }).catch(() => null),
+                fetch(kvListUrl, {
+                    method: "POST"
+                }).catch(() => null),
+                fetch(kvDeletedUrl, {
+                    method: "POST"
+                }).catch(() => null)
+            ];
+
+            await Promise.allSettled(tasks);
+            if (broadcastChannel) {
+                try {
+                    broadcastChannel.postMessage({
+                        type: "pt_grad_sync",
+                        items: payloadList,
+                        deletedIds: finalDeletedIds
+                    });
+                } catch (e) {}
+            }
+        }
+
+        async function pullResponsesFromCloud() {
+            const collectedItems = [];
+            const collectedDeletedIds = Array.from(getDeletedIdsSet());
+
+            // Nguồn 1: keyvalue.immanuel.co (danh sách phản hồi & danh sách ID đã xoá)
+            try {
+                const kvGetUrl = `${KV_BASE_ENDPOINT}_list`;
+                const resKv = await fetch(kvGetUrl, { method: "GET", cache: "no-store" });
+                if (resKv.ok) {
+                    const txt = await resKv.text();
+                    const cleaned = (txt.startsWith('"') && txt.endsWith('"')) ? JSON.parse(txt) : txt;
+                    const parsed = typeof cleaned === "string" ? JSON.parse(cleaned) : cleaned;
+                    if (Array.isArray(parsed)) {
+                        collectedItems.push(...parsed);
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const kvDelGetUrl = `${KV_BASE_ENDPOINT}_deleted`;
+                const resKvDel = await fetch(kvDelGetUrl, { method: "GET", cache: "no-store" });
+                if (resKvDel.ok) {
+                    const txtDel = await resKvDel.text();
+                    const cleanedDel = (txtDel.startsWith('"') && txtDel.endsWith('"')) ? JSON.parse(txtDel) : txtDel;
+                    const parsedDel = typeof cleanedDel === "string" ? JSON.parse(cleanedDel) : cleanedDel;
+                    if (Array.isArray(parsedDel)) {
+                        parsedDel.forEach(id => {
+                            if (id) collectedDeletedIds.push(String(id));
+                        });
+                    }
+                }
+            } catch (e) {}
+
+            // Nguồn 2: ntfy.sh
+            try {
+                const ntfyPollUrl = `${NTFY_ENDPOINT}/json?poll=1&since=all`;
+                const resNtfy = await fetch(ntfyPollUrl, { method: "GET", cache: "no-store" });
+                if (resNtfy.ok) {
+                    const rawLines = (await resNtfy.text()).split(/\r?\n/).filter(Boolean);
+                    rawLines.forEach(line => {
+                        try {
+                            const envelope = JSON.parse(line);
+                            if (envelope && envelope.event === "message" && typeof envelope.message === "string") {
+                                const msgObj = JSON.parse(envelope.message);
+                                if (msgObj && Array.isArray(msgObj.deletedIds)) {
+                                    msgObj.deletedIds.forEach(id => {
+                                        if (id) collectedDeletedIds.push(String(id));
+                                    });
+                                }
+                                if (msgObj && msgObj.type === "pt_grad_delete" && msgObj.deletedId) {
+                                    collectedDeletedIds.push(String(msgObj.deletedId));
+                                }
+                                if (msgObj && Array.isArray(msgObj.items)) {
+                                    collectedItems.push(...msgObj.items);
+                                } else if (msgObj && msgObj.type === "pt_grad_rsvp" && msgObj.entry) {
+                                    collectedItems.push(msgObj.entry);
+                                }
+                            }
+                        } catch (errLine) {}
+                    });
+                }
+            } catch (e) {}
+
+            const merged = mergeAndSortResponses(collectedItems, collectedDeletedIds);
+            if (ownerUnlocked) {
+                renderOwnerDashboard();
+            }
+            return merged;
+        }
+
+        async function submitGuestRsvp(event) {
+            event.preventDefault();
+            if (isGuestInviteFileOrParam) {
+                // Khách vẫn gửi bình thường, chỉ không có Góc Quản Lý
+            }
+
+            const nameEl = document.getElementById("rsvp-name");
+            const wishEl = document.getElementById("rsvp-wish");
+            const submitBtn = document.getElementById("rsvp-submit-btn");
+            const feedbackBox = document.getElementById("rsvp-feedback");
+            const feedbackTitle = document.getElementById("rsvp-feedback-title");
+            const feedbackText = document.getElementById("rsvp-feedback-text");
+
+            const guestName = nameEl.value.trim();
+            if (!guestName) {
+                showToast("Vui lòng nhập họ và tên của bạn!");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Đang gửi & đồng bộ...";
+
+            const entry = {
+                id: `rsvp_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                name: guestName,
+                attendance: selectedAttendance,
+                wish: wishEl.value.trim(),
+                createdAt: new Date().toISOString(),
+                ownerEmail: OWNER_EMAIL
+            };
+
+            const updatedList = mergeAndSortResponses([entry], []);
+            await pushStateToCloudAndWait(updatedList, Array.from(getDeletedIdsSet()));
+
+            wishEl.value = "";
+            feedbackBox.style.display = "block";
+            if (selectedAttendance === "Có tham dự") {
+                feedbackBox.classList.remove("declined");
+                feedbackTitle.textContent = `Cảm ơn ${guestName} đã xác nhận tham dự! 🎉`;
+                feedbackText.textContent = entry.wish
+                    ? "Phản hồi và lời chúc của bạn đã được gửi và đồng bộ tới Góc Quản Lý của Phương Thuỳ. Hẹn gặp bạn ngày 27/11/2026!"
+                    : "Xác nhận tham dự của bạn đã được đồng bộ tới Phương Thuỳ. Hẹn gặp bạn tại 12 Nguyễn Văn Bảo!";
+                burstConfetti();
+            } else {
+                feedbackBox.classList.add("declined");
+                feedbackTitle.textContent = `Cảm ơn ${guestName} đã phản hồi! 💌`;
+                feedbackText.textContent = entry.wish
+                    ? "Rất tiếc vì bạn chưa thể tham dự, lời chúc của bạn đã được gửi và đồng bộ tới Phương Thuỳ rồi nhé!"
+                    : "Phương Thuỳ đã nhận được phản hồi của bạn. Cảm ơn bạn đã luôn quan tâm!";
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Gửi Xác Nhận & Lời Chúc ✨";
+            showToast("Đã gửi và đồng bộ thành công!");
+        }
+
+        // =========================================================
+        // 5. GÓC QUẢN LÝ CỦA PHƯƠNG THUỲ (MÃ PIN CHỮ & SỐ 4-12 KÝ TỰ)
+        // =========================================================
+        async function hashPinValue(pinStr) {
+            if (window.crypto && window.crypto.subtle) {
+                const digest = await crypto.subtle.digest(
+                    "SHA-256",
+                    new TextEncoder().encode(`${OWNER_EMAIL}:${pinStr}`)
+                );
+                return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+            }
+            return `pin_${pinStr.length}_${pinStr}`;
+        }
+
+        function togglePinVisibility() {
+            const input = document.getElementById("pin-input");
+            const eye = document.getElementById("pin-eye-btn");
+            if (input.type === "password") {
+                input.type = "text";
+                eye.textContent = "🙈";
+            } else {
+                input.type = "password";
+                eye.textContent = "👁️";
+            }
+        }
+
+        function openOwnerManagementModal() {
+            if (isGuestInviteFileOrParam) return;
+            pendingDeleteId = null;
+            document.getElementById("owner-modal").classList.add("open");
+
+            if (ownerUnlocked) {
+                document.getElementById("owner-auth-box").style.display = "none";
+                document.getElementById("owner-panel-box").style.display = "block";
+                renderOwnerDashboard();
+                pullResponsesFromCloud();
+            } else {
+                document.getElementById("owner-auth-box").style.display = "block";
+                document.getElementById("owner-panel-box").style.display = "none";
+                const pinInput = document.getElementById("pin-input");
+                pinInput.value = "";
+                pinInput.type = "password";
+                document.getElementById("pin-eye-btn").textContent = "👁️";
+
+                if (!storedPinHash) {
+                    document.getElementById("pin-heading").textContent = "Thiết Lập Mã PIN Lần Đầu";
+                    document.getElementById("pin-subtext").textContent = "Tạo mã PIN gồm chữ và/hoặc số (4–12 ký tự) để bảo vệ Góc Quản Lý của Phương Thuỳ.";
+                    document.getElementById("pin-action-btn").textContent = "Lưu Mã PIN & Mở";
+                } else {
+                    document.getElementById("pin-heading").textContent = "Nhập Mã PIN Chủ Sở Hữu";
+                    document.getElementById("pin-subtext").textContent = "Nhập đúng mã PIN của bạn để xem lời chúc đồng bộ từ mọi thiết bị.";
+                    document.getElementById("pin-action-btn").textContent = "Mở Góc Quản Lý";
+                }
+
+                setTimeout(() => pinInput.focus(), 80);
+            }
+        }
+
+        function closeOwnerManagementModal() {
+            pendingDeleteId = null;
+            document.getElementById("owner-modal").classList.remove("open");
+        }
+
+        async function submitPinForm(event) {
+            event.preventDefault();
+            const pinInput = document.getElementById("pin-input");
+            const rawPin = pinInput.value.trim();
+
+            if (!/^[A-Za-z0-9]{4,12}$/.test(rawPin)) {
+                showToast("Mã PIN gồm chữ và/hoặc số, từ 4 đến 12 ký tự!");
+                return;
+            }
+
+            const hashed = await hashPinValue(rawPin);
+
+            if (!storedPinHash) {
+                storedPinHash = hashed;
+                localStorage.setItem(STORAGE_PIN_KEY, storedPinHash);
+                ownerUnlocked = true;
+                showToast("Đã thiết lập mã PIN thành công!");
+            } else {
+                if (hashed !== storedPinHash) {
+                    showToast("Mã PIN chưa đúng, vui lòng thử lại!");
+                    pinInput.select();
+                    return;
+                }
+                ownerUnlocked = true;
+                showToast("Đã mở khóa Góc Quản Lý!");
+            }
+
+            document.getElementById("owner-auth-box").style.display = "none";
+            document.getElementById("owner-panel-box").style.display = "block";
+            renderOwnerDashboard();
+            await pullResponsesFromCloud();
+            startAutoRefreshLoop();
+        }
+
+        function startAutoRefreshLoop() {
+            if (autoSyncInterval) clearInterval(autoSyncInterval);
+            autoSyncInterval = setInterval(() => {
+                if (ownerUnlocked && document.getElementById("owner-modal").classList.contains("open")) {
+                    pullResponsesFromCloud();
+                }
+            }, 4000);
+        }
+
+        async function manualSyncNow() {
+            document.getElementById("sync-status-label").textContent = "Đang đồng bộ từ đám mây...";
+            await pullResponsesFromCloud();
+            document.getElementById("sync-status-label").textContent =
+                "Đã đồng bộ lúc " + new Date().toLocaleTimeString("vi-VN") + " (tự động mỗi 4s)";
+            showToast("Đã cập nhật dữ liệu mới nhất!");
+        }
+
+        function switchOwnerTab(tabName) {
+            ["responses", "invite", "settings"].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.toggle("active", t === tabName);
+                document.getElementById(`panel-${t}`).style.display = t === tabName ? "block" : "none";
+            });
+            if (tabName === "invite") {
+                refreshInviteLinkOutput();
+            } else if (tabName === "settings") {
+                document.getElementById("cfg-default-guest").value = cardData.defaultGuest;
+                document.getElementById("cfg-date").value = cardData.date;
+                document.getElementById("cfg-time").value = cardData.time;
+                document.getElementById("cfg-venue").value = cardData.venue;
+                document.getElementById("cfg-note").value = cardData.note;
+                document.getElementById("cfg-new-pin").value = "";
+            }
+        }
+
+        function renderOwnerDashboard() {
+            const list = mergeAndSortResponses([]);
+            let yesTotal = 0;
+            let noTotal = 0;
+            let wishTotal = 0;
+
+            list.forEach(item => {
+                if (item.attendance === "Không tham dự") noTotal += 1;
+                else yesTotal += 1;
+                if (item.wish && item.wish.trim()) wishTotal += 1;
+            });
+
+            document.getElementById("count-all-badge").textContent = list.length;
+            document.getElementById("stat-attending").textContent = yesTotal;
+            document.getElementById("stat-declined").textContent = noTotal;
+            document.getElementById("stat-wishes").textContent = wishTotal;
+
+            const container = document.getElementById("responses-container");
+            if (list.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:13px; padding:26px 0;">Chưa có phản hồi nào từ khách mời.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(item => {
+                const isYes = item.attendance !== "Không tham dự";
+                const badge = isYes
+                    ? `<span class="badge-attend">🎉 Có tham dự</span>`
+                    : `<span class="badge-absent">💌 Không tham dự</span>`;
+                const wishBlock = item.wish && item.wish.trim()
+                    ? `<div class="wish-bubble">“${escapeHtml(item.wish)}”</div>`
+                    : `<div style="font-size:12px; color:#94a3b8; font-style:italic; margin-top:6px;">Không để lại lời chúc</div>`;
+                const isConfirming = pendingDeleteId === item.id;
+                const delLabel = isConfirming ? "⚠️ Xác nhận xoá" : "🗑️ Xoá";
+                const delClass = isConfirming ? "btn-del-one confirming" : "btn-del-one";
+                const dateLabel = item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : "";
+
+                return `
+                    <div class="response-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <strong style="color:#0F2342; font-size:14px;">${escapeHtml(item.name)}</strong>
+                            ${badge}
+                        </div>
+                        <div style="font-size:11px; color:#64748b; margin-top:3px;">${dateLabel}</div>
+                        ${wishBlock}
+                        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                            <button type="button" class="${delClass}" onclick="handleDeleteResponse('${escapeHtml(item.id)}')">${delLabel}</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function handleDeleteResponse(recordId) {
+            if (!ownerUnlocked) return;
+            const targetId = String(recordId || "");
+            if (!targetId) return;
+
+            if (pendingDeleteId !== targetId) {
+                pendingDeleteId = targetId;
+                renderOwnerDashboard();
+                showToast("Bấm 'Xác nhận xoá' lần nữa để xoá phản hồi này.");
+                return;
+            }
+
+            pendingDeleteId = null;
+            const deletedSet = getDeletedIdsSet();
+            deletedSet.add(targetId);
+            const deletedArr = saveDeletedIdsSet(deletedSet);
+
+            const remaining = responsesCache
+                .concat(readLocalResponses())
+                .filter((item, idx, arr) => item && item.id && arr.findIndex(x => String(x.id) === String(item.id)) === idx)
+                .filter(item => !deletedSet.has(String(item.id)));
+
+            responsesCache = remaining;
+            writeLocalResponses(remaining);
+            renderOwnerDashboard();
+            await pushStateToCloudAndWait(remaining, deletedArr);
+            showToast("Đã xoá vĩnh viễn phản hồi & đồng bộ!");
+        }
+
+        function exportResponsesCsv() {
+            const list = mergeAndSortResponses([]);
+            if (list.length === 0) {
+                showToast("Chưa có phản hồi để xuất CSV!");
+                return;
+            }
+            const header = ["STT", "Họ và tên", "Tham dự", "Lời chúc", "Thời gian"];
+            const rows = list.map((r, i) => [
+                i + 1,
+                `"${r.name.replace(/"/g, '""')}"`,
+                `"${r.attendance}"`,
+                `"${(r.wish || "Không có lời chúc").replace(/"/g, '""')}"`,
+                `"${r.createdAt ? new Date(r.createdAt).toLocaleString("vi-VN") : ""}"`
+            ]);
+            const csv = "\uFEFF" + [header.join(","), ...rows.map(row => row.join(","))].join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "Danh-Sach-Phan-Hoi-Phuong-Thuy-2026.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast("Đã xuất file CSV!");
+        }
+
+        // =========================================================
+        // 6. TẠO LINK MỜI (?to=...) & TẢI FILE THIỆP HTML CHO KHÁCH
+        // =========================================================
+        function buildGuestStandaloneHtml(friendName) {
+            const cleanName = (friendName || "").trim();
+            const safeName = cleanName || cardData.defaultGuest || "Quý vị / Bạn";
+            const cfgLiteral = JSON.stringify(cardData).replace(/</g, "\\u003c");
+            const nameLiteral = JSON.stringify(safeName).replace(/</g, "\\u003c");
+
+            let fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const guestBootSnippet = `<script>window.__IS_GUEST_INVITE__ = true; window.__GUEST_RECIPIENT__ = ${nameLiteral}; window.__GUEST_CARD_CFG__ = ${cfgLiteral};<\/script>`;
+            fullHtml = fullHtml.replace("</head>", guestBootSnippet + "\n</head>");
+            return fullHtml;
+        }
+
+        function buildInviteUrlForFriend(friendName) {
+            const cleanName = (friendName || "").trim();
+            const cfgB64 = encodeUtf8Base64(cardData);
+            const proto = window.location.protocol || "";
+            const isWebHosted = proto === "http:" || proto === "https:";
+
+            if (isWebHosted) {
+                const base = window.location.origin + window.location.pathname;
+                const sp = new URLSearchParams();
+                if (cleanName) sp.set("to", cleanName);
+                sp.set("guest", "1");
+                if (cfgB64) sp.set("cfg", cfgB64);
+                return `${base}?${sp.toString()}`;
+            }
+
+            // Khi chạy ở khung xem trước cục bộ / file://, tạo link mở trực tiếp data:text/html
+            const standaloneHtml = buildGuestStandaloneHtml(cleanName);
+            return "data:text/html;charset=utf-8," + encodeURIComponent(standaloneHtml);
+        }
+
+        function refreshInviteLinkOutput() {
+            const friendName = document.getElementById("invite-friend-name").value.trim();
+            document.getElementById("invite-link-output").value = buildInviteUrlForFriend(friendName);
+        }
+
+        function copyInviteLink() {
+            const input = document.getElementById("invite-link-output");
+            refreshInviteLinkOutput();
+            input.select();
+            input.setSelectionRange(0, 999999);
+            try {
+                const ok = document.execCommand("copy");
+                showToast(ok ? "Đã sao chép link mời!" : "Hãy bôi đen ô link và bấm Ctrl+C / Cmd+C!");
+            } catch (e) {
+                showToast("Hãy bôi đen ô link và sao chép!");
+            }
+        }
+
+        function openInviteLink() {
+            refreshInviteLinkOutput();
+            const url = document.getElementById("invite-link-output").value;
+            const win = window.open(url, "_blank", "noopener,noreferrer");
+            if (!win) {
+                showToast("Trình duyệt chặn bật tab mới, hãy dùng nút 'Tải file thiệp cho bạn (.HTML)'!");
+            }
+        }
+
+        function downloadGuestHtmlFile() {
+            const friendName = document.getElementById("invite-friend-name").value.trim();
+            const slug = friendName
+                ? friendName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "")
+                : "Khach-Moi";
+
+            const htmlContent = buildGuestStandaloneHtml(friendName);
+            const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `Thiep-Moi-Phuong-Thuy-${slug || "Khach-Moi"}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast(`Đã tải file thiệp cho ${friendName || "khách mời"}!`);
+        }
+
+        async function saveCardSettings(event) {
+            event.preventDefault();
+            cardData = {
+                ...cardData,
+                defaultGuest: document.getElementById("cfg-default-guest").value.trim() || "Quý vị / Bạn",
+                date: document.getElementById("cfg-date").value.trim(),
+                time: document.getElementById("cfg-time").value.trim(),
+                venue: document.getElementById("cfg-venue").value.trim(),
+                note: document.getElementById("cfg-note").value.trim()
+            };
+            localStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(cardData));
+
+            const newPinRaw = document.getElementById("cfg-new-pin").value.trim();
+            if (newPinRaw) {
+                if (!/^[A-Za-z0-9]{4,12}$/.test(newPinRaw)) {
+                    showToast("Mã PIN mới phải gồm chữ và/hoặc số (4–12 ký tự)!");
+                    return;
+                }
+                storedPinHash = await hashPinValue(newPinRaw);
+                localStorage.setItem(STORAGE_PIN_KEY, storedPinHash);
+                document.getElementById("cfg-new-pin").value = "";
+            }
+
+            renderCardAndEnvelope();
+            refreshInviteLinkOutput();
+            showToast("Đã lưu cài đặt thiệp & mã PIN!");
+        }
+
+        // =========================================================
+        // 7. KHỞI TẠO KHI MỞ TRANG (LUÔN BẮT ĐẦU BẰNG PHONG BÌ ĐÓNG)
+        // =========================================================
+        (function initInvitationApp() {
+            try {
+                const savedCfg = JSON.parse(localStorage.getItem(STORAGE_CONFIG_KEY) || "null");
+                if (savedCfg && typeof savedCfg === "object") {
+                    cardData = { ...DEFAULT_CARD_DATA, ...savedCfg };
+                }
+            } catch (e) {}
+
+            if (window.__GUEST_CARD_CFG__ && typeof window.__GUEST_CARD_CFG__ === "object") {
+                cardData = { ...DEFAULT_CARD_DATA, ...cardData, ...window.__GUEST_CARD_CFG__ };
+            }
+
+            const urlGuest = parseUrlInviteState();
+            const embeddedGuest = typeof window.__GUEST_RECIPIENT__ === "string" ? window.__GUEST_RECIPIENT__.trim() : "";
+            recipientFromLink = urlGuest || embeddedGuest;
+
+            // Đảm bảo khi vừa mở trang luôn ở trạng thái phong bì đang đóng
+            document.getElementById("envelope-stage").classList.remove("is-hidden");
+            document.getElementById("invitation-stage").classList.remove("is-visible");
+            document.getElementById("envelope-shell").classList.remove("opening");
+
+            responsesCache = mergeAndSortResponses(readLocalResponses(), []);
+            renderCardAndEnvelope();
+            pullResponsesFromCloud();
+
+            if (broadcastChannel) {
+                broadcastChannel.onmessage = (ev) => {
+                    if (ev.data && (Array.isArray(ev.data.items) || Array.isArray(ev.data.deletedIds))) {
+                        mergeAndSortResponses(ev.data.items || [], ev.data.deletedIds || []);
+                        if (ownerUnlocked) renderOwnerDashboard();
+                    }
+                };
+            }
+
+            window.addEventListener("storage", (ev) => {
+                if (ev.key === STORAGE_RESPONSES_KEY || ev.key === STORAGE_DELETED_KEY) {
+                    responsesCache = mergeAndSortResponses(readLocalResponses(), []);
+                    if (ownerUnlocked) renderOwnerDashboard();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
